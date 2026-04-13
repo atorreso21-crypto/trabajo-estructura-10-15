@@ -1,0 +1,64 @@
+import java.util.Arrays;
+
+public class MatricesGrafos {
+    
+    public static void ejecutarFloyd() {
+        int INF = 99999;
+        int V = 5;
+        int[][] dist = new int[V][V];
+
+        for (int[] row : dist) Arrays.fill(row, INF);
+        for (int i = 0; i < V; i++) dist[i][i] = 0;
+
+        
+        dist[0][1] = 10; dist[0][4] = 3;
+        dist[1][2] = 2;  dist[1][4] = 4;
+        dist[2][3] = 9;
+        dist[3][2] = 7;
+        dist[4][1] = 1;  dist[4][2] = 8; dist[4][3] = 2;
+
+        
+        for (int k = 0; k < V; k++) {
+            for (int i = 0; i < V; i++) {
+                for (int j = 0; j < V; j++) {
+                    if (dist[i][k] + dist[k][j] < dist[i][j])
+                        dist[i][j] = dist[i][k] + dist[k][j];
+                }
+            }
+        }
+
+        System.out.println("--- Matriz de Distancias (Floyd) ---");
+        for (int[] row : dist) System.out.println(Arrays.toString(row));
+        System.out.println("Distancia mínima 0 -> 3: " + dist[0][3]);
+    }
+
+    public static void ejecutarWarshall() {
+        int V = 4;
+        int[][] reach = new int[V][V];
+
+        
+        reach[0][1] = 1; reach[1][2] = 1;
+        reach[2][0] = 1; reach[2][3] = 1;
+
+        for (int k = 0; k < V; k++) {
+            for (int i = 0; i < V; i++) {
+                for (int j = 0; j < V; j++) {
+                    reach[i][j] = (reach[i][j] == 1 || (reach[i][k] == 1 && reach[k][j] == 1)) ? 1 : 0;
+                }
+            }
+        }
+
+        System.out.println("\n--- Matriz de Alcanzabilidad (Warshall) ---");
+        boolean conexo = true;
+        for (int[] row : reach) {
+            System.out.println(Arrays.toString(row));
+            for (int val : row) if (val == 0) conexo = false;
+        }
+        System.out.println("¿Es fuertemente conexo?: " + (conexo ? "SÍ" : "NO"));
+    }
+
+    public static void main(String[] args) {
+        ejecutarFloyd();
+        ejecutarWarshall();
+    }
+}
