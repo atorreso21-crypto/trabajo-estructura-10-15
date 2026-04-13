@@ -1,0 +1,74 @@
+import java.util.*;
+
+public class AlgoritmoPrim {
+    
+    static class Arista implements Comparable<Arista> {
+        int destino, peso;
+        public Arista(int destino, int peso) {
+            this.destino = destino;
+            this.peso = peso;
+        }
+        @Override
+        public int compareTo(Arista otra) {
+            return this.peso - otra.peso;
+        }
+    }
+
+    public static void ejecutarPrim(int n, List<List<Arista>> adj, int inicio) {
+        boolean[] visitado = new boolean[n];
+        PriorityQueue<Arista> pq = new PriorityQueue<>();
+        int costoTotal = 0;
+
+        System.out.println("\n--- Ejecutando Prim desde el vértice " + inicio + " ---");
+        
+        
+        visitado[inicio] = true;
+        for (Arista a : adj.get(inicio)) {
+            pq.add(a);
+        }
+
+        System.out.println("Orden de selección de aristas:");
+        while (!pq.isEmpty()) {
+            Arista actual = pq.poll();
+
+            if (visitado[actual.destino]) continue;
+
+            visitado[actual.destino] = true;
+            costoTotal += actual.peso;
+            System.out.println("Arista hacia vértice: " + actual.destino + " con peso: " + actual.peso);
+
+            for (Arista vecino : adj.get(actual.destino)) {
+                if (!visitado[vecino.destino]) {
+                    pq.add(vecino);
+                }
+            }
+        }
+        System.out.println("Costo total del MST: " + costoTotal);
+    }
+
+    public static void main(String[] args) {
+        int n = 6; // 6 vértices [cite: 5]
+        List<List<Arista>> adj = new ArrayList<>();
+        for (int i = 0; i < n; i++) adj.add(new ArrayList<>());
+
+    
+        agregarArista(adj, 0, 1, 6);
+        agregarArista(adj, 0, 2, 1);
+        agregarArista(adj, 0, 3, 5);
+        agregarArista(adj, 1, 2, 2);
+        agregarArista(adj, 1, 4, 5);
+        agregarArista(adj, 2, 3, 2);
+        agregarArista(adj, 2, 4, 6);
+        agregarArista(adj, 3, 5, 4);
+        agregarArista(adj, 4, 5, 3);
+
+        
+        ejecutarPrim(n, adj, 0);
+        ejecutarPrim(n, adj, 2);
+    }
+
+    static void agregarArista(List<List<Arista>> adj, int u, int v, int p) {
+        adj.get(u).add(new Arista(v, p));
+        adj.get(v).add(new Arista(u, p));
+    }
+}
