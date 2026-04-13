@@ -1,0 +1,69 @@
+import java.util.*;
+
+public class RedComputadoras {
+    private int nodos;
+    private List<List<Integer>> adyacencia;
+
+    public RedComputadoras(int nodos) {
+        this.nodos = nodos;
+        this.adyacencia = new ArrayList<>();
+        for (int i = 0; i < nodos; i++) adyacencia.add(new ArrayList<>());
+    }
+
+    
+    public void agregarConexion(int u, int v) {
+        adyacencia.get(u).add(v);
+        adyacencia.get(v).add(u); // Red no dirigida
+        System.out.println("Conexión establecida entre PC " + u + " y PC " + v);
+    }
+
+    
+    public void buscarCamino(int origen, int destino) {
+        Queue<Integer> cola = new LinkedList<>();
+        int[] padre = new int[nodos];
+        Arrays.fill(padre, -1);
+        boolean[] visitado = new boolean[nodos];
+
+        cola.add(origen);
+        visitado[origen] = true;
+
+        while (!cola.isEmpty()) {
+            int actual = cola.poll();
+            if (actual == destino) break;
+
+            for (int vecino : adyacencia.get(actual)) {
+                if (!visitado[vecino]) {
+                    visitado[vecino] = true;
+                    padre[vecino] = actual;
+                    cola.add(vecino);
+                }
+            }
+        }
+
+        if (!visitado[destino]) {
+            System.out.println("PC " + origen + " no puede comunicarse con PC " + destino);
+        } else {
+            List<Integer> camino = new ArrayList<>();
+            for (int v = destino; v != -1; v = padre[v]) camino.add(v);
+            Collections.reverse(camino);
+            System.out.println("Comunicación exitosa!");
+            System.out.println("Camino corto (saltos): " + camino);
+            System.out.println("Número de saltos: " + (camino.size() - 1));
+        }
+    }
+
+    public static void main(String[] args) {
+        RedComputadoras red = new RedComputadoras(6);
+
+        
+        red.agregarConexion(0, 1);
+        red.agregarConexion(1, 2);
+        red.agregarConexion(2, 3);
+        red.agregarConexion(3, 4);
+        red.agregarConexion(4, 5);
+
+        System.out.println("\n--- Pruebas de Red ---");
+        red.buscarCamino(0, 5); // Comunicación larga
+        red.buscarCamino(0, 3); // Comunicación corta
+    }
+}
