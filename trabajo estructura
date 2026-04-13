@@ -1,0 +1,65 @@
+import java.util.*;
+
+public class AlgoritmoKruskal {
+    
+    static class AristaKruskal implements Comparable<AristaKruskal> {
+        int origen, destino, peso;
+        public AristaKruskal(int o, int d, int p) {
+            this.origen = o; this.destino = d; this.peso = p;
+        }
+        @Override
+        public int compareTo(AristaKruskal otra) {
+            return this.peso - otra.peso;
+        }
+    }
+
+    static class UnionFind {
+        int[] padre;
+        public UnionFind(int n) {
+            padre = new int[n];
+            for (int i = 0; i < n; i++) padre[i] = i;
+        }
+        public int buscar(int i) {
+            if (padre[i] == i) return i;
+            return padre[i] = buscar(padre[i]);
+        }
+        public void union(int i, int j) {
+            int raizI = buscar(i);
+            int raizJ = buscar(j);
+            if (raizI != raizJ) padre[raizI] = raizJ;
+        }
+    }
+
+    public static void main(String[] args) {
+        List<AristaKruskal> aristas = new ArrayList<>();
+        
+        aristas.add(new AristaKruskal(0, 1, 6));
+        aristas.add(new AristaKruskal(0, 2, 1));
+        aristas.add(new AristaKruskal(0, 3, 5));
+        aristas.add(new AristaKruskal(1, 2, 2));
+        aristas.add(new AristaKruskal(1, 4, 5));
+        aristas.add(new AristaKruskal(2, 3, 2));
+        aristas.add(new AristaKruskal(2, 4, 6));
+        aristas.add(new AristaKruskal(3, 5, 4));
+        aristas.add(new AristaKruskal(4, 5, 3));
+
+        Collections.sort(aristas);
+        UnionFind uf = new UnionFind(6);
+        int costoTotal = 0;
+        int descartadas = 0;
+
+        System.out.println("--- Resultados Kruskal ---");
+        for (AristaKruskal a : aristas) {
+            if (uf.buscar(a.origen) != uf.buscar(a.destino)) {
+                uf.union(a.origen, a.destino);
+                costoTotal += a.peso;
+                System.out.println("Seleccionada: " + a.origen + "-" + a.destino + " (" + a.peso + ")");
+            } else {
+                descartadas++;
+            }
+        }
+        System.out.println("Costo Total MST: " + costoTotal);
+        System.out.println("Aristas descartadas: " + descartadas);
+    }
+}
+
