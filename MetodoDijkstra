@@ -1,0 +1,69 @@
+import java.util.*;
+
+public class MetodoDijkstra {
+    static class Nodo implements Comparable<Nodo> {
+        int id, distancia;
+        public Nodo(int id, int distancia) {
+            this.id = id; this.distancia = distancia;
+        }
+        @Override
+        public int compareTo(Nodo otro) {
+            return this.distancia - otro.distancia;
+        }
+    }
+
+    public static void calcularDijkstra(int n, List<List<Nodo>> adj, int origen) {
+        int[] distancias = new int[n];
+        int[] padres = new int[n];
+        Arrays.fill(distancias, Integer.MAX_VALUE);
+        Arrays.fill(padres, -1);
+        distancias[origen] = 0;
+
+        PriorityQueue<Nodo> pq = new PriorityQueue<>();
+        pq.add(new Nodo(origen, 0));
+
+        while (!pq.isEmpty()) {
+            Nodo actual = pq.poll();
+
+            for (Nodo vecino : adj.get(actual.id)) {
+                if (distancias[actual.id] + vecino.distancia < distancias[vecino.id]) {
+                    distancias[vecino.id] = distancias[actual.id] + vecino.distancia;
+                    padres[vecino.id] = actual.id;
+                    pq.add(new Nodo(vecino.id, distancias[vecino.id]));
+                }
+            }
+        }
+
+        System.out.println("--- Resultados Dijkstra (Origen: " + origen + ") ---");
+        for (int i = 0; i < n; i++) {
+            System.out.print("Hacia " + i + ": Distancia = " + (distancias[i] == Integer.MAX_VALUE ? "Inf" : distancias[i]));
+            System.out.println(" | Camino: " + obtenerCamino(padres, i));
+        }
+    }
+
+    private static String obtenerCamino(int[] padres, int destino) {
+        List<Integer> camino = new ArrayList<>();
+        for (int v = destino; v != -1; v = padres[v]) camino.add(v);
+        Collections.reverse(camino);
+        return camino.toString();
+    }
+
+    public static void main(String[] args) {
+        int n = 5; // Nodos 0 al 4
+        List<List<Nodo>> adj = new ArrayList<>();
+        for (int i = 0; i < n; i++) adj.add(new ArrayList<>());
+
+        
+        adj.get(0).add(new Nodo(1, 10)); // 0-1 (10) [cite: 34]
+        adj.get(0).add(new Nodo(4, 3));  // 0-4 (3) [cite: 34]
+        adj.get(1).add(new Nodo(2, 2));  // 1-2 (2) [cite: 34]
+        adj.get(1).add(new Nodo(4, 4));  // 1-4 (4) [cite: 34]
+        adj.get(2).add(new Nodo(3, 9));  // 2-3 (9) [cite: 35]
+        adj.get(3).add(new Nodo(2, 7));  // 3-2 (7) [cite: 36]
+        adj.get(4).add(new Nodo(1, 1));  // 4-1 (1) [cite: 37]
+        adj.get(4).add(new Nodo(2, 8));  // 4-2 (8) [cite: 37]
+        adj.get(4).add(new Nodo(3, 2));  // 4-3 (2) [cite: 37]
+
+        calcularDijkstra(n, adj, 0);
+    }
+}
